@@ -1,0 +1,104 @@
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+  animation: slideIn 0.25s ease both;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+}
+
+.card.featured {
+  border: 2px solid var(--blue);
+}
+
+.card.selected {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.name {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.badge_new {
+  background: var(--blue-light);
+  color: var(--blue-dark);
+}
+
+.badge_popular {
+  background: var(--blue);
+  color: #fff;
+}
+
+.badge_save {
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+
+.pricing {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.price {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.period {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.was {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+.checkmark {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 13px;
+  color: var(--blue);
+  font-weight: 700;
+}

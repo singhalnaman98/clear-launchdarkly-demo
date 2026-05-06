@@ -1,0 +1,52 @@
+export const ANNUAL_PLAN = {
+  id: 'annual',
+  name: 'Annual membership',
+  desc: 'Full year of CLEAR access at airports nationwide',
+  price: '$189',
+  period: '/ year',
+  badge: null,
+  featured: false,
+}
+
+export const FLEX_PLANS = [
+  {
+    id: 'day',
+    name: 'Day pass',
+    desc: 'Perfect for a single trip',
+    price: '$9',
+    period: '/ day',
+    was: '$16/day if annual',
+    badge: { text: 'New', type: 'new' },
+    featured: false,
+  },
+  {
+    id: 'week',
+    name: 'Week pass',
+    desc: 'Great for business travel',
+    price: '$29',
+    period: '/ week',
+    was: '$36/week if annual',
+    badge: { text: 'Most popular', type: 'popular' },
+    featured: true,
+  },
+  {
+    id: 'month',
+    name: 'Month pass',
+    desc: 'Frequent flyer flexibility',
+    price: '$49',
+    period: '/ month',
+    was: '$58/month if annual',
+    badge: { text: 'Save 16%', type: 'save' },
+    featured: false,
+  },
+  {
+    id: 'annual-flex',
+    name: 'Annual membership',
+    desc: 'Best value for regulars',
+    price: '$189',
+    period: '/ year',
+    was: null,
+    badge: null,
+    featured: false,
+  },
+]

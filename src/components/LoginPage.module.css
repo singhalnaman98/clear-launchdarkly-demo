@@ -1,0 +1,103 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(180deg, #f7f9fc 0%, #eef2f6 100%);
+}
+
+.card {
+  width: min(480px, 100%);
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 28px 60px rgba(13, 31, 68, 0.12);
+  padding: 2.5rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 1.5rem;
+}
+
+.logo span {
+  color: var(--blue);
+}
+
+h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+}
+
+.subtitle {
+  margin: 0 0 1.75rem 0;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+label {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+input {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+input:focus {
+  border-color: #2563eb;
+  background: white;
+}
+
+.error {
+  color: #b91c1c;
+  font-size: 0.95rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  border-radius: 14px;
+  padding: 0.95rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary {
+  background: #2563eb;
+  color: white;
+  flex: 1;
+}
+
+.secondary {
+  background: #e5e7eb;
+  color: #111827;
+  flex: 1;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
