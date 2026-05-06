@@ -28,7 +28,7 @@ The demo is a two-screen web application:
 Fifteen predefined users cover the key scenarios. Use these to navigate the demo:
 
 | Username | Account status | Airport |
-|---|---|---|---|
+|---|---|---|
 | `user1` | free | jfk | 
 | `user2` | expired | sfo | 
 | `user3` | active | jfk | 
