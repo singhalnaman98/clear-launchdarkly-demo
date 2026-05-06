@@ -15,7 +15,7 @@ The demo shows how LaunchDarkly enables CLEAR's engineering and product teams to
 
 ## App overview
 
-The demo is a two-screen web application:
+The demo is a two-screen web application built with React and Vite on the frontend, and Python 3 with FastAPI on the backend. User profiles and session data are stored in a lightweight SQLite database, keeping the setup self-contained with no external database dependency.
 
 **Login screen** : a simple username input that loads a predefined user profile. No authentication is performed. The username maps to a user context (account_status, airport) that drives all LaunchDarkly flag evaluations downstream.
 
@@ -177,6 +177,7 @@ VITE_LD_CLIENT_KEY=your-react-client-side-sdk-key
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload
+python3 backend/run.py
 ```
 
 **Frontend:**
