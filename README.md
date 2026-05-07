@@ -23,6 +23,73 @@ The demo is a two-screen web application built with React and Vite on the fronte
 
 ---
 
+## Setup
+
+### Prerequisites
+
+- Node.js 18+ (for the React frontend)
+- Python 3.10+ (for the FastAPI backend)
+- NOTE: This project has been developed and verified on **Python 3.13.13**. FastAPI supports Python 3.10+ and the app may run on earlier versions, however SQLAlchemy 2.1.0b2 compatibility has only been confirmed on Python 3.13.13. If you encounter issues with SQLAlchemy on a different Python version, upgrading to Python 3.13.13 is recommended.
+
+- A LaunchDarkly account with the following configured:
+   - Boolean flag: `flex-subscription-enabled` (client-side SDK enabled) 
+      - Serve `false`, when the flag is off, and `false` when the flag is on
+      - 
+  - String flag: `highlighted-plan-variant` with values `week`, `day`, `none`
+  - AI Config: `chat-assistant-prompt` with two prompt variations
+  - Experiment on `highlighted-plan-variant` with `plan-selected` metric
+- An OpenAI API key
+
+### Create a new project in LaunchDarkly titled "naman-singhal-demo" and make sure a "test" environment is available
+
+### Environment variables
+
+**Backend `.env`:**
+```
+LD_SDK_KEY=your-python-server-side-sdk-key
+OPENAI_API_KEY=your-openai-api-key
+LD_API_KEY=your-admin-access-service-token-api
+```
+
+**Frontend `.env`:**
+```
+VITE_LD_CLIENT_KEY=your-client-side-ID-for-the-env
+```
+
+### Running the app
+
+**Backend:**
+```bash
+cd backend
+pip3 install -r requirements.txt
+python3 run.py
+```
+
+**Frontend:**
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173/login` and log in with any of the predefined usernames below.
+
+---
+
+## LaunchDarkly features demonstrated
+
+| Feature | Flag / Config | Where |
+|---|---|---|
+| Feature flag — server-side gating | `flex-subscriptions-enabled` | `/api/plans` backend |
+| Feature flag — client-side rendering | `flex-subscriptions-enabled` | `FlagContext.jsx` frontend |
+| Targeting by user attribute | `account_status = expired` | LD dashboard targeting rules |
+| Kill switch | `flex-subscriptions-enabled` | Toggle off in LD dashboard |
+| A/B/C experimentation | `highlighted-plan-variant` | Subscription page card highlight |
+| Custom metric tracking | `plan-selected` | `ldClient.track()` on plan selection |
+| AI Config — prompt management | `chat-assistant-prompt` | `/api/chat` backend |
+| AI Config — variation targeting | Neutral vs urgent tone | LD AI Config dashboard |
+
+--- 
+
 ## Demo users
 
 Fifteen predefined users cover the key scenarios. Use these to navigate the demo:
@@ -50,15 +117,28 @@ Each user requires a non-null password, which can be a randomly generated string
 
 The login screen passes the username directly to the backend as the LaunchDarkly user context key.
 
+The /api/user login request will take the user directly to the subscribe page which should currently only show the single annual membership plan available to the user. Since the launchdarkly flag has not been configured yet, this is the default subscription option available to the users. 
+
 ---
 
 ## LaunchDarkly integration
+
+**In a new terminal:**
+```bash
+cd backend
+python3 ldsetup.py
+```
+The above command creates a new flag in launchdarkly - flex-subscription-enabled and adds default rule configurations, a segment rule, and an external user targeting rule. 
+
+The script also creates a segment "clear-internal-qa" with three users - user1, user2, user3 which for this demo purposes will be treated as test accounts of the internal QA team at CLEAR. 
+
 
 ### 1. Feature flags — dual evaluation (client + server)
 
 **Flag key:** `flex-subscription-enabled`
 **Type:** Boolean
-**Default:** `false` 
+**Default when targeting off:** `false` 
+**Default when targeting on:** `false` 
 **SDK:** Evaluated on both the server-side SDK and the client-side SDK
 
 The flex subscription feature is gated on both sides of the stack deliberately:
@@ -82,7 +162,8 @@ This dual-evaluation pattern means the kill switch is complete. Toggling the fla
 **Flag key:** `highlighted-plan-variant`
 **Type:** String
 **Variations:** `week` / `day` / `none`
-**Default:** `none`
+**Default when targeting off:** `none`
+**Default when targeting on:** `none`
 **SDK:** Client-side only
 
 This experiment tests whether visually highlighting a specific plan card on the subscription page influences users to select a plan. The hypothesis is that highlighting a specific plan card increases the likelihood of a user selecting a plan for checkout.
@@ -144,64 +225,3 @@ The backend `/api/chat` endpoint evaluates the AI Config using the LaunchDarkly 
 
 ---
 
-## Setup
-
-### Prerequisites
-
-- Node.js 18+ (for the React frontend)
-- Python 3.10+ (for the FastAPI backend)
-- NOTE: This project has been developed and verified on **Python 3.13.13**. FastAPI supports Python 3.10+ and the app may run on earlier versions, however SQLAlchemy 2.1.0b2 compatibility has only been confirmed on Python 3.13.13. If you encounter issues with SQLAlchemy on a different Python version, upgrading to Python 3.13.13 is recommended.
-
-- A LaunchDarkly account with the following configured:
-   - Boolean flag: `flex-subscription-enabled` (client-side SDK enabled) 
-      - Serve `false`, when the flag is off, and `false` when the flag is on
-      - 
-  - String flag: `highlighted-plan-variant` with values `week`, `day`, `none`
-  - AI Config: `chat-assistant-prompt` with two prompt variations
-  - Experiment on `highlighted-plan-variant` with `plan-selected` metric
-- An OpenAI API key
-
-### Environment variables
-
-**Backend `.env`:**
-```
-LD_SDK_KEY=your-python-server-side-sdk-key
-OPENAI_API_KEY=your-openai-api-key
-```
-
-**Frontend `.env`:**
-```
-VITE_LD_CLIENT_KEY=your-react-client-side-sdk-key
-```
-
-### Running the app
-
-**Backend:**
-```bash
-cd backend
-pip3 install -r requirements.txt
-python3 run.py
-```
-
-**Frontend:**
-```bash
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173/login` and log in with any of the predefined usernames above.
-
----
-
-## LaunchDarkly features demonstrated
-
-| Feature | Flag / Config | Where |
-|---|---|---|
-| Feature flag — server-side gating | `flex-subscriptions-enabled` | `/api/plans` backend |
-| Feature flag — client-side rendering | `flex-subscriptions-enabled` | `FlagContext.jsx` frontend |
-| Targeting by user attribute | `account_status = expired` | LD dashboard targeting rules |
-| Kill switch | `flex-subscriptions-enabled` | Toggle off in LD dashboard |
-| A/B/C experimentation | `highlighted-plan-variant` | Subscription page card highlight |
-| Custom metric tracking | `plan-selected` | `ldClient.track()` on plan selection |
-| AI Config — prompt management | `chat-assistant-prompt` | `/api/chat` backend |
-| AI Config — variation targeting | Neutral vs urgent tone | LD AI Config dashboard |
