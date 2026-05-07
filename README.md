@@ -32,15 +32,12 @@ The demo is a two-screen web application built with React and Vite on the fronte
 - NOTE: This project has been developed and verified on **Python 3.13.13**. FastAPI supports Python 3.10+ and the app may run on earlier versions, however SQLAlchemy 2.1.0b2 compatibility has only been confirmed on Python 3.13.13. If you encounter issues with SQLAlchemy on a different Python version, upgrading to Python 3.13.13 is recommended.
 
 - A LaunchDarkly account with the following configured:
-   - Boolean flag: `flex-subscription-enabled` (client-side SDK enabled) 
-      - Serve `false`, when the flag is off, and `false` when the flag is on
-      - 
-  - String flag: `highlighted-plan-variant` with values `week`, `day`, `none`
-  - AI Config: `chat-assistant-prompt` with two prompt variations
-  - Experiment on `highlighted-plan-variant` with `plan-selected` metric
-- An OpenAI API key
+   - Create a new project in LaunchDarkly titled "naman-singhal-demo" and make sure a "test" environment is available 
+  - LD server-side-sdk key (for naman-singhal-demo project)
+  - LD API key with admin role as a service token
+  - LD client-id for the test environmnet
+  - An OpenAI API key
 
-### Create a new project in LaunchDarkly titled "naman-singhal-demo" and make sure a "test" environment is available
 
 ### Environment variables
 
@@ -75,6 +72,33 @@ Open `http://localhost:5173/login` and log in with any of the predefined usernam
 
 ---
 
+## Demo users
+
+Fifteen predefined users cover the key scenarios. Use these to navigate the demo:
+
+Account status types -
+1. Free : These are users of CLEAR that have signed up and created an account with CLEAR but don't have an active paid subscription. 
+2. Expired : These are users of CLEAR that had an active paying membership in the past but have not renewed their subscription after it had expired. 
+
+| Username | Account status | Airport |
+|---|---|---|
+| `user1` | free | jfk | 
+| `user2` | expired | sfo | 
+| `user3` | active | jfk | 
+| `jfk-expired-1` | expired | jfk | 
+| `sfo-expired-1` | expired | sfo |
+| `jfk-free-1` | free | jfk | 
+| `sfo-free-1` | free | sfo |
+
+
+Each user requires a non-null password, which can be a randomly generated string. Without this, the /api/user login request will not be triggered.
+
+The login screen passes the username directly to the backend as the LaunchDarkly user context key.
+
+The /api/user login request will take the user directly to the subscribe page which should currently only show the single annual membership plan available to the user. Since the launchdarkly flag has not been configured yet, this is the default subscription option available to the users. 
+
+---
+
 ## LaunchDarkly features demonstrated
 
 | Feature | Flag / Config | Where |
@@ -90,37 +114,6 @@ Open `http://localhost:5173/login` and log in with any of the predefined usernam
 
 --- 
 
-## Demo users
-
-Fifteen predefined users cover the key scenarios. Use these to navigate the demo:
-
-| Username | Account status | Airport |
-|---|---|---|
-| `user1` | free | jfk | 
-| `user2` | expired | sfo | 
-| `user3` | active | jfk | 
-| `jfk-expired-1` | expired | jfk | 
-| `jfk-expired-2` | expired | jfk | 
-| `jfk-expired-3` | expired | jfk | 
-| `sfo-expired-1` | expired | sfo |
-| `sfo-expired-2` | expired | sfo | 
-| `sfo-expired-3` | expired | sfo | 
-| `jfk-free-1` | free | jfk | 
-| `jfk-free-2` | free | jfk | 
-| `jfk-free-3` | free | jfk | 
-| `sfo-free-1` | free | sfo |
-| `sfo-free-2` | free | sfo |
-| `sfo-free-3` | free | sfo |
-
-
-Each user requires a non-null password, which can be a randomly generated string. Without this, the /api/user login request will not be triggered.
-
-The login screen passes the username directly to the backend as the LaunchDarkly user context key.
-
-The /api/user login request will take the user directly to the subscribe page which should currently only show the single annual membership plan available to the user. Since the launchdarkly flag has not been configured yet, this is the default subscription option available to the users. 
-
----
-
 ## LaunchDarkly integration
 
 **In a new terminal:**
@@ -131,6 +124,15 @@ python3 ldsetup.py
 The above command creates a new flag in launchdarkly - flex-subscription-enabled and adds default rule configurations, a segment rule, and an external user targeting rule. 
 
 The script also creates a segment "clear-internal-qa" with three users - user1, user2, user3 which for this demo purposes will be treated as test accounts of the internal QA team at CLEAR. 
+
+**In case the above commands are erroring out:** 1. Manually create a segment CLEAR Internal QA with the key `clear-internal-qa` by going to the segments section on the right panel. Add the three users - user1, user2, user3 to individual targeting as shown in the screenshot below. 
+<img width="2876" height="1258" alt="image" src="https://github.com/user-attachments/assets/4628023e-9baa-469d-b5c6-6167808ee69f" />
+
+
+2. Create a new flag `flex-subscription-enabled` in Launchdarkly test environment as depicted in the image below. 
+
+<img width="1440" height="779" alt="image" src="https://github.com/user-attachments/assets/7ec6deaa-7788-4eef-993c-8d917e6f0b35" />
+
 
 
 ### 1. Feature flags — dual evaluation (client + server)
@@ -149,9 +151,9 @@ On the **frontend**, the client-side SDK reads the same flag to control renderin
 
 This dual-evaluation pattern means the kill switch is complete. Toggling the flag off in the LaunchDarkly dashboard removes the feature from both the UI and the API response simultaneously, with no redeployment required.
 
-**Segments — internal QA validation before customer rollout:** Before the flex subscription feature is released to any customer segment, it is first validated internally using a LaunchDarkly segment called **CLEAR Internal QA**. This segment is defined by user keys (`user1`, `user2`) and represents CLEAR's internal QA team's free and expired accounts. A targeting rule at the top of the flag's rule stack serves `true` to any user in the CLEAR Internal QA segment, regardless of their account status or airport. This allows the engineering and QA team to test the full flex subscription experience in the production environment before the flag is ever enabled for customers. Once internal validation is complete, the user-facing targeting rules are activated while the QA segment rule remains in place, ensuring the internal team can always access the feature for ongoing monitoring.
+**Segments — internal QA validation before customer rollout:** A top-priority targeting rule serves true to all users in the CLEAR Internal QA segment (keys: user1, user2, user3) regardless of account status or airport. This allows the team to validate the feature in production before any customer-facing rules are activated, and remains in place post-launch for ongoing monitoring.
 
-**Targeting rule:** The flag serves `true` only when `account_status = expired` and `airport = jfk`. This reflects the business decision to launch flex subscriptions initially as a re-engagement tool for lapsed members, before a broader rollout to all users. However, this is not a fixed decision. The targeting rules can change as the rollout strategy changes, say if the business / product org wants to enable it for `airport = sfo` instead or not include airport at all. The option of having these attributes available, allow for more control around the rollout and release strategy.
+**Targeting rule:** Serves `true` when `account_status` = `expired` and `airport` = `jfk`, scoping the initial rollout to lapsed members in one market. The rule is not fixed as the rollout strategy evolves, attributes like airport can be adjusted or removed entirely from the LD dashboard without any code changes, giving the product team direct control over the release scope.
 
 **Kill switch demo moment:** Toggle the flag off while logged in as an expired user if the flag was targeted for expired user. The flex plans disappear from the UI immediately without requiring any code changes from front end or the backend, giving complete control on the release without the need for deployments. 
 
@@ -166,21 +168,22 @@ This dual-evaluation pattern means the kill switch is complete. Toggling the fla
 **Default when targeting on:** `none`
 **SDK:** Client-side only
 
-This experiment tests whether visually highlighting a specific plan card on the subscription page influences users to select a plan. The hypothesis is that highlighting a specific plan card increases the likelihood of a user selecting a plan for checkout.
+This experiment tests whether visually highlighting a specific plan card on the subscription page influences users to select a plan. The hypothesis is that highlighting a specific plan card increases the likelihood of a user selecting a plan for checkout
 
 **Variation A — `week`:** The week pass card is highlighted with a blue border and a check mark as the default selected plan. 
 
-**Variation B — `day`:** The day pass card is highlighted. Tests whether a lower price point as the anchor drives more plan selections overall, even if at lower revenue per transaction.
+**Variation B — `day`:** The day pass card is highlighted and checked. Tests whether a lower price point as the anchor drives more plan selections overall, even if at lower revenue per transaction.
 
 **Variation C — `none`:** No card is highlighted.
 
-**Prerequisite flag:** `highlighted-plan-variant` uses `flex-subscription-enabled` as a prerequisite flag. Without this, if `highlighted-plan-variant` were to serve `day` or `week` to a user who does not have flex subscriptions enabled — meaning those plan cards are not rendered on the page at all — the app would throw a browser-level alert dialog notifying the user of an error. The prerequisite flag relationship in LaunchDarkly prevents this by ensuring the targeting rules of `highlighted-plan-variant` are only evaluated and applied when `flex-subscription-enabled` is already serving `true` for that user. This demonstrates how prerequisite flags can be used to enforce safe flag dependencies and prevent UI errors caused by flags being evaluated out of order or for the wrong audience.
 
-Traffic is split 33/33/33 across all three variations. Each user is consistently assigned the same variation on every session, based on their user key.
+Traffic is split 33.33/33.33/33.33 across all three variations. Each user is consistently assigned the same variation on every session, based on their user key.
 
 **Metric:** `plan-selected` — a custom Occurrence (binary) metric that fires when the user clicks "Continue with this plan." Tracked via `ldClient.track("plan-selected")` on the frontend at the moment of selection of "continue with XYZ plan".
 
-**Statistical approach:** Bayesian at 90% confidence threshold. Bayesian was chosen over the traditional Frequentist approach because it starts surfacing directional results as soon as events come in, without needing a large sample size upfront. This makes it better suited for a demo environment where the number of users is limited.
+This is how the flag appears when the experiment is live and completely set up. 
+<img width="2858" height="1316" alt="image" src="https://github.com/user-attachments/assets/927a56d1-6b4d-46e1-8232-4312d81ac290" />
+
 
 **Important assumption:** With only a few demo users, the experiment will not reach statistical significance or declare a winner. The demo shows the experiment mechanism of traffic splitting, event tracking, and result accumulation rather than a concluded experiment. In a production environment with real CLEAR traffic, even a 1% rollout would generate thousands of events per day.
 
@@ -197,19 +200,22 @@ A floating chat assistant on the subscription page helps non paying users choose
 
 Two prompt variations are defined:
 
-**Variation A — neutral:** You are Alex, a friendly CLEAR membership concierge who genuinely cares about helping users get back through airport fast lanes. You have access to the following subscription plans: Day pass at $9, Week pass at $29, Month pass at $49, and Annual membership at $189. When a user asks for help, respond warmly and conversationally, ask a follow up question about their travel habits if needed, and walk them through why a specific plan fits their lifestyle. Use the user's name if you know it, and express genuine enthusiasm about getting them back on track with their travels.
+**Variation A — neutral:** 
 
-**Variation B — urgent:** You are a CLEAR membership assistant. You have access to the following subscription plans: Day pass at $9, Week pass at $29, Month pass at $49, and Annual membership at $189. When a user asks for help, respond in 2 sentences maximum. Be direct, factual, and recommend the single best plan for their situation with no elaboration.
+**Variation B — urgent:** 
+
+<img width="2866" height="1276" alt="image" src="https://github.com/user-attachments/assets/88aefecc-d2c0-4cc6-96e6-b43d88d4c34f" />
+
 
 The backend `/api/chat` endpoint evaluates the AI Config using the LaunchDarkly server-side AI SDK, passing the user's context (user_id, account_status, airport). The prompt returned by LaunchDarkly is used as the system prompt for the OpenAI API call. The model response is returned to the frontend and displayed in the chat panel. The user's context can be used for targeting the specific variation for different types of users. 
-
-**What this demonstrates:** The prompt that drives the AI assistant's behavior lives in LaunchDarkly, not in the application code. CLEAR's product or marketing team can change the assistant's tone, update its instructions, or switch between prompt variations from the LaunchDarkly dashboard without requiring a redeployment or code changes. The same kill switch and targeting capabilities that apply to feature flags apply to AI Configs: the flag can be turned off instantly and that would make thee AI serve a default system prompt that is defined in the code, or served different prompts to different users.
 
 ---
 
 ## Assumptions
 
 **No real authentication.** The login screen does not perform any authentication. Usernames map directly to hardcoded user profiles in the backend. In a real implementation, user attributes would be loaded from CLEAR's identity and subscription management systems.
+
+**No active user subscription flow.** The demo is scoped to non-paying users, specifically, free and expired accounts. Active paying members are included in the user set for flag targeting demonstration purposes only. Initiating, modifying, or cancelling a real subscription is out of scope for the demo.
 
 **No real payment flow.** Selecting a plan and clicking "Continue" does not initiate a checkout or payment process. The interaction exists solely to generate the `plan-selected` experiment metric event.
 
