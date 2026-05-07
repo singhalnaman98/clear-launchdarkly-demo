@@ -5,7 +5,7 @@ import './index.css'
 import { useInitializationStatus, createLDReactProvider } from '@launchdarkly/react-sdk';
 
 
-const LDProvider = createLDReactProvider(import.meta.env.VITE_LD_CLIENT_KEY, { kind: 'user', anonymous: true });
+const LDProvider = createLDReactProvider(import.meta.env.VITE_LD_CLIENT_KEY, { kind: 'user', anonymous: true, account_status: 'unknown', airport: 'unknown' });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

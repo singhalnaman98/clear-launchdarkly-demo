@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
     ldclient.set_config(Config(os.environ.get("LD_SDK_KEY")))
     ld_client = ldclient.get()
     app.state.ld = ld_client  # attach to app.state so routers can access it
-    user_context = ldclient.Context(key="user-key", kind="user")
+    user_context = ldclient.ContextBuilder("unknown-user").kind("user").set("account_status", "unknown").set("airport", "unknown").build()
     all_flags = ld_client.all_flags_state(context=user_context)
     print("=== LaunchDarkly flags loaded ===")
     for flag_key, flag_value in all_flags.to_values_map().items():

@@ -6,3 +6,4 @@ python-dotenv==1.0.0
 launchdarkly-server-sdk==9.15.1
 launchdarkly-server-sdk-ai==0.19.0
 openai==2.34.0
+launchdarkly-api==22.0.0

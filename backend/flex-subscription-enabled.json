@@ -1,0 +1,69 @@
+{
+  "name": "flex-subscription-enabled",
+  "key": "flex-subscription-enabled",
+  "description": "Controls the availability of flexible subscription SKUs (day, week, month) for CLEAR members. When enabled, the frontend renders flex plan options and the backend serves the corresponding pricing data. Evaluated on both client and server SDKs. Targeting is based on account status and airport.",
+  "temporary": true,
+  "tags": [
+    "demo",
+    "subscription"
+  ],
+  "clientSideAvailability": {
+    "usingMobileKey": true,
+    "usingEnvironmentId": true
+  },
+  "variations": [
+    {
+      "value": true,
+      "name": "true"
+    },
+    {
+      "value": false,
+      "name": "false"
+    }
+  ],
+  "environments": {
+    "test": {
+      "on": true,
+      "offVariation": 1,
+      "fallthrough": {
+        "variation": 1
+      },
+      "rules": [
+        {
+          "variation": 0,
+          "clauses": [
+            {
+              "attribute": "segmentMatch",
+              "op": "segmentMatch",
+              "values": [
+                "clear-internal-qa"
+              ],
+              "negate": false
+            }
+          ]
+        },
+        {
+          "variation": 0,
+          "clauses": [
+            {
+              "attribute": "account_status",
+              "op": "in",
+              "values": [
+                "expired"
+              ],
+              "negate": false
+            },
+            {
+              "attribute": "airport",
+              "op": "in",
+              "values": [
+                "jfk"
+              ],
+              "negate": false
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
