@@ -20,6 +20,7 @@ The demo is a two-screen web application built with React and Vite on the fronte
 **Login screen** : a simple username input that loads a predefined user profile. No authentication is performed. The username maps to a user context (account_status, airport) that drives all LaunchDarkly flag evaluations downstream.
 
 **Subscription page** : displays the CLEAR membership plans available to the logged-in user. Which plans are shown, how they are presented, and how the AI assistant behaves are all controlled by LaunchDarkly at runtime.
+<img width="2876" height="1432" alt="image" src="https://github.com/user-attachments/assets/14ca8fe1-15b6-4959-86e7-65df0e652662" />
 
 ---
 
@@ -74,11 +75,12 @@ Open `http://localhost:5173/login` and log in with any of the predefined usernam
 
 ## Demo users
 
-Fifteen predefined users cover the key scenarios. Use these to navigate the demo:
 
 Account status types -
 1. Free : These are users of CLEAR that have signed up and created an account with CLEAR but don't have an active paid subscription. 
 2. Expired : These are users of CLEAR that had an active paying membership in the past but have not renewed their subscription after it had expired. 
+3. Active : These are users of CLEAR that are currently enrolled in a paid subscription
+
 
 | Username | Account status | Airport |
 |---|---|---|
@@ -91,7 +93,7 @@ Account status types -
 | `sfo-free-1` | free | sfo |
 
 
-Each user requires a non-null password, which can be a randomly generated string. Without this, the /api/user login request will not be triggered.
+Each user requires a non-null password, which can be a random string. Without this, the /api/user login request will not be triggered.
 
 The login screen passes the username directly to the backend as the LaunchDarkly user context key.
 
@@ -125,7 +127,7 @@ The above command creates a new flag in launchdarkly - flex-subscription-enabled
 
 The script also creates a segment "clear-internal-qa" with three users - user1, user2, user3 which for this demo purposes will be treated as test accounts of the internal QA team at CLEAR. 
 
-**In case the above commands are erroring out:** 1. Manually create a segment CLEAR Internal QA with the key `clear-internal-qa` by going to the segments section on the right panel. Add the three users - user1, user2, user3 to individual targeting as shown in the screenshot below. 
+**⚠️ In case the script does not work:** 1. Manually create a segment CLEAR Internal QA with the key `clear-internal-qa` by going to the segments section on the right panel. Add the three users - user1, user2, user3 to individual targeting as shown in the screenshot below. 
 <img width="2876" height="1258" alt="image" src="https://github.com/user-attachments/assets/4628023e-9baa-469d-b5c6-6167808ee69f" />
 
 
