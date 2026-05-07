@@ -109,7 +109,7 @@ def read_plans(
     else:
         logger.warning(f"User {requested_user_id} not found, using unknown status/airport")
     
-    # populate_initial_data(db)  # Ensure data is there
+    populate_initial_data(db)
     plans = crud.get_plans(db)
     annual = None
     flex = []

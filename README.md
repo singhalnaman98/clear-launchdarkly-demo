@@ -153,7 +153,9 @@ The backend `/api/chat` endpoint evaluates the AI Config using the LaunchDarkly 
 - NOTE: This project has been developed and verified on **Python 3.13.13**. FastAPI supports Python 3.10+ and the app may run on earlier versions, however SQLAlchemy 2.1.0b2 compatibility has only been confirmed on Python 3.13.13. If you encounter issues with SQLAlchemy on a different Python version, upgrading to Python 3.13.13 is recommended.
 
 - A LaunchDarkly account with the following configured:
-  - Boolean flag: `flex-subscription-enabled` (client-side SDK enabled)
+   - Boolean flag: `flex-subscription-enabled` (client-side SDK enabled) 
+      - Serve `false`, when the flag is off, and `false` when the flag is on
+      - 
   - String flag: `highlighted-plan-variant` with values `week`, `day`, `none`
   - AI Config: `chat-assistant-prompt` with two prompt variations
   - Experiment on `highlighted-plan-variant` with `plan-selected` metric
@@ -177,14 +179,12 @@ VITE_LD_CLIENT_KEY=your-react-client-side-sdk-key
 **Backend:**
 ```bash
 cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
-python3 backend/run.py
+pip3 install -r requirements.txt
+python3 run.py
 ```
 
 **Frontend:**
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
